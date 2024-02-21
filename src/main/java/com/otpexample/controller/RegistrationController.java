@@ -25,8 +25,8 @@ public class RegistrationController {
     }
     @PostMapping("/verify-otp")
     public Map<String,String>verifyOtp(@RequestParam String mobile,@RequestParam String otp){
-        twilioSmsVerificationService.verifyOtp(mobile, otp);
-        return null;
+
+        return twilioSmsVerificationService.verifyOtp(mobile, otp);
     }
 
 }

@@ -14,10 +14,27 @@ public class TwilioSmsVerificationService {
     private UserService userService;
 
 
-    static final Map<String, String> smsOtpMapping = new HashMap<>();
+   static final Map<String, String> smsOtpMapping = new HashMap<>();
 
-    public void verifyOtp(String mobile, String otp) {
-        System.out.println(smsOtpMapping);
-        System.out.println(smsOtpMapping.get(mobile));
+
+    public Map<String,String> verifyOtp(String email, String otp) {
+        String storedOtp = smsOtpMapping.get(email);
+        Map<String, String> response = new HashMap<>();
+        if (storedOtp != null && storedOtp.equals(otp)) {
+            User user = userService.getUserByMobile(email);
+            if (user != null) {
+                userService.verifyMobile(user);
+                smsOtpMapping.remove(email);
+                response.put("status", "success");
+                response.put("message", "Email verified successfully");
+            } else {
+                response.put("status", "error");
+                response.put("message", "User not found");
+            }
+        } else {
+            response.put("status", "error");
+            response.put("message", "Invalid otp");
+        }
+        return response;
     }
 }

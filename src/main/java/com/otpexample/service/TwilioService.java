@@ -24,12 +24,12 @@ public class TwilioService {
 
 
     public String generateOtp() {
-        return String.format("%06d", new java.util.Random().nextInt(100000));
+        return String.format("%06d", new java.util.Random().nextInt(100000)).trim();
     }
 
     public Map<String, String> sendOtpSms(String mobile) {
         String otp = generateOtp();
-        smsOtpMapping.put(mobile, otp);
+        smsOtpMapping.put(mobile,otp);
         sendSms(mobile, "otp for mobile verification:" + otp);
         Map<String, String> response = new HashMap<>();
         response.put("status", "success");
@@ -38,14 +38,17 @@ public class TwilioService {
     }
 
     public void sendSms(String to, String messageBody) {
+        // Ensure that 'to' includes the country code (e.g., +91 for India)
+        if (!to.startsWith("+")) {
+            to = "+91" + to;  // Assuming the country code for India is +91
+        }
+
         Twilio.init(accountSid, authToken);
 
         Message message = Message.creator(
-                        new PhoneNumber(to),  // To phone number
-                        new PhoneNumber(twilioPhoneNumber),  // Twilio phone number
+                        new PhoneNumber(to),
+                        new PhoneNumber(twilioPhoneNumber),
                         messageBody)
                 .create();
-
-        //System.out.println("SMS sent with SID: " + message.getSid());
     }
 }
